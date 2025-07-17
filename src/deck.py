@@ -5,7 +5,9 @@ class Deck:
         self.suits = ("Hearts", "Diamonds", "Clubs", "Spades")
         self.ranks = [i for i in range(1,14)]
         self.cards = []
-
+        self.create_deck()
+        self.shuffle()
+    
     def create_deck(self):
         self.cards = []
         for suit in self.suits:

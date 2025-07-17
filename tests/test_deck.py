@@ -4,8 +4,11 @@ from src.deck import Deck
 
 def test_deck_initialization():
     deck = Deck()
-    assert len(deck.cards) == 0, "Deck should be empty upon initialization."
-
+    assert len(deck.cards) == 52, "Deck contain 52 cards upon initialization."
+    temp_deck = Deck()
+    temp_deck.create_deck()
+    assert deck.cards != temp_deck.cards, "Shuffled stack must differ from unshuffled"
+    
 def test_create_deck():
     deck = Deck()
     deck.create_deck()
@@ -92,7 +95,7 @@ def test_deal_invalid_number_raises_valueerror():
 
 def test_deck_len_method():
     deck = Deck()
-    assert len(deck) == 0, "The length of an empty deck should be 0."
+    assert len(deck) == 52, "The length of an empty deck should be 0."
 
     deck.create_deck()
     assert len(deck) == 52, "The length of a full deck should be 52."
