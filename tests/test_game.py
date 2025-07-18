@@ -97,3 +97,37 @@ class TestOpenReserveCard:
 
         assert len(custom_game.reserve) == 0
         assert len(custom_game.waste) == 0
+
+class TestCardCompatibility:
+    def test_is_card_compatible_tableau_valid_moves(self, custom_game):
+        card1 = Card(5, "Diamonds")
+        to_card1 = Card(6, "Spades")
+        assert Game._is_card_compatible_tableau(card1, to_card1) is True
+
+        card2 = Card(12, "Clubs")
+        to_card2 = Card(13, "Hearts")
+        assert Game._is_card_compatible_tableau(card2, to_card2) is True
+    
+    def test_is_card_compatible_tableau_same_color(self, custom_game):
+        card1 = Card(7, "Diamonds")
+        to_card1 = Card(8, "Hearts")
+        assert Game._is_card_compatible_tableau(card1, to_card1) is False
+
+        card2 = Card(10, "Clubs")
+        to_card2 = Card(11, "Spades")
+        assert Game._is_card_compatible_tableau(card2, to_card2) is False
+
+    def test_is_card_compatible_tableau_incompatible_ranks(self, custom_game):
+        card1 = Card(5, "Clubs")
+        to_card1 = Card(5, "Hearts")
+        assert Game._is_card_compatible_tableau(card1, to_card1) is False
+
+        card2 = Card(11, "Hearts")
+        to_card2 = Card(10, "Spades")
+        assert Game._is_card_compatible_tableau(card2, to_card2) is False
+
+        card3 = Card(3, "Spades")
+        to_card3 = Card(5, "Diamonds")
+        assert Game._is_card_compatible_tableau(card3, to_card3) is False
+        
+        
