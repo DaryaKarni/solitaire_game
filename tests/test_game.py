@@ -33,8 +33,7 @@ def custom_game():
     with patch('src.game.Deck') as MockDeck:
         mock_deck_instance = MockDeck.return_value
         game_instance = Game()
-        game_instance.deck = mock_deck_instance
-        yield mock_deck_instance
+        yield game_instance
 
 class TestGameInitialization:
     def test_initialization_tableau_counts_and_face_up(self, game):
@@ -59,5 +58,42 @@ class TestGameInitialization:
         for foundation in game.foundations:
             assert len(foundation) == 0, "Foundation length must be 0"
 
+class TestOpenReserveCard:
+    def test_open_reserve_card_moves_to_waste(self, custom_game):
+        custom_game.reserve = [Card(10, "Spades", is_face_up=False), Card(5, "Diamonds", is_face_up=False)]
+        custom_game.waste = []
 
-      
+        initial_reserve_len = len(custom_game.reserve)
+        initial_waste_len = len(custom_game.waste)
+        card_to_move = custom_game.reserve[-1]
+
+        custom_game.open_reserve_card()
+
+        assert len(custom_game.reserve) == initial_reserve_len - 1
+        assert len(custom_game.waste) == initial_waste_len + 1
+        assert custom_game.waste[-1] == card_to_move
+        assert custom_game.waste[-1].is_face_up == True
+
+    def test_open_reserve_card_recycles_waste_to_reserve(self, custom_game):
+        custom_game.reserve = []
+        custom_game.waste = [Card(7, "Clubs", is_face_up=True), Card(4, "Hearts", is_face_up=True)]
+
+        initial_waste_cards = list(custom_game.waste)
+        custom_game.open_reserve_card()
+
+        assert custom_game.reserve[0] == initial_waste_cards[1]
+        assert custom_game.reserve[1] == initial_waste_cards[0]
+        assert len(custom_game.reserve) == len(initial_waste_cards)
+        assert len(custom_game.waste) == 0
+
+        for card in custom_game.reserve:
+            assert card.is_face_up == False
+
+    def test_open_reserve_card_both_empty(self, custom_game):
+        custom_game.reserve = []
+        custom_game.waste = []
+
+        custom_game.open_reserve_card()
+
+        assert len(custom_game.reserve) == 0
+        assert len(custom_game.waste) == 0
